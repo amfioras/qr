@@ -31,7 +31,7 @@
 <body>
   <h1>QR Skenuoklis</h1>
 
-  <button onclick="startScanner()">📷 Skenuoti</button>
+  <button id="scanBtn">📷 Skenuoti</button>
   <div id="reader"></div>
 
   <div id="success">✔️</div>
@@ -74,21 +74,18 @@
       link.click();
     }
 
-    function startScanner() {
+    document.getElementById("scanBtn").addEventListener("click", function() {
       document.getElementById("reader").style.display = "block";
+
       html5QrCode = new Html5Qrcode("reader");
 
-      Html5Qrcode.getCameras().then(cameras => {
-        if (cameras && cameras.length) {
-          let cameraId = cameras[0].id; // naudoja pirmą rastą kamerą
-          html5QrCode.start(
-            cameraId,
-            { fps: 10, qrbox: 250 },
-            onScanSuccess
-          ).catch(err => console.error("Klaida paleidžiant kamerą:", err));
-        }
-      }).catch(err => console.error("Kamerų sąrašo klaida:", err));
-    }
+      // Start kamera su facingMode: environment (galinė)
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      ).catch(err => console.error("Klaida paleidžiant kamerą:", err));
+    });
   </script>
 </body>
 </html>

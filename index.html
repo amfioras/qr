@@ -43,7 +43,7 @@
         // Pypsėjimas
         document.getElementById("beep").play();
 
-        // Rodo varnelę trumpam
+        // Varnelė trumpam
         let success = document.getElementById("success");
         success.style.display = "block";
         setTimeout(() => success.style.display = "none", 1000);
@@ -51,18 +51,29 @@
     }
 
     function downloadFile() {
-      let blob = new Blob([ids.join("\n")], { type: "text/plain" });
+      let blob = new Blob([ids.join("\\n")], { type: "text/plain" });
       let link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "nuskenuoti_id.txt";
       link.click();
     }
 
-    let html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader",
-      { fps: 10, qrbox: 250 }
-    );
-    html5QrcodeScanner.render(onScanSuccess);
+    // Čia vietoj Html5QrcodeScanner naudojam tiesioginį kameros paleidimą
+    function startScanner() {
+      let html5QrCode = new Html5Qrcode("reader");
+      Html5Qrcode.getCameras().then(cameras => {
+        if (cameras && cameras.length) {
+          let cameraId = cameras[0].id;
+          html5QrCode.start(
+            cameraId,
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+          ).catch(err => console.error("Klaida paleidžiant kamerą:", err));
+        }
+      }).catch(err => console.error("Kamerų sąrašo klaida:", err));
+    }
+
+    startScanner();
   </script>
 </body>
 </html>
